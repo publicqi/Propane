@@ -351,7 +351,7 @@ def reloadScoreBoard(server):
         topTagStart = "<div class=\"topscore\">"
         topTagEnd = "</div>"
         for team in serverScores:
-            tableResults = tableResults + "<tr><td>" + topTagStart + team[0].title() + topTagEnd + "</td><td>" + topTagStart + str(team[1]) + topTagEnd + "</td></tr>\n"
+            tableResults = tableResults + "<tr><td>" + topTagStart + team[0] + topTagEnd + "</td><td>" + topTagStart + str(team[1]) + topTagEnd + "</td></tr>\n"
             topTagStart = "<div class=\"otherscore\">"
             topTagEnd = "</div>"
         tableResults = tableResults + "</table></div>"
