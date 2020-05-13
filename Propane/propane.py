@@ -48,8 +48,6 @@ class bcolors:
     CYAN = '\033[36m'
 
 
-
-
 '''
 Globals:
 
@@ -103,6 +101,7 @@ loadConfig():
 def loadConfig():
     print(bcolors.CYAN + bcolors.BOLD + "Loading Configurations" + bcolors.ENDC)
     global configFile, serversToCheck, whiteListInit, blackListInit, sleepTime, outfile, outdir, startTime, endTime, whiteListIsOn, blackListIsOn, enablePropAcc, showTargetIP, enableCustomPorts, portsToCheck, enableBackUp
+    global serverPortDict
     configFile = config.read("propane_config.ini")
     serversToCheck = config.items("Targets")
     whiteListInit = config.items("WhiteList")
@@ -119,6 +118,7 @@ def loadConfig():
     showTargetIP = config.getboolean("General", "showTargetIP")
     enableCustomPorts = config.getboolean("General", "enableCustomPorts")
     portsToCheck = config.items("PortConfig")
+    serverPortDict = {}
 
 
 
@@ -189,6 +189,7 @@ def score(whiteList, blackList):
                 for port in portsToCheck:
                     if(port[0] == server[0]):
                         serverURL = serverURL + ":" + port[1]
+                        serverPortDict[server[0]] = port[1]
             print(bcolors.GREEN + bcolors.BOLD + "Checking Server: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC)
             url = urllib.request.urlopen(serverURL, None, 10)
             html = url.read()
@@ -333,25 +334,43 @@ def reloadScoreBoard(server):
         tableResults = tableResults + "<table class=\"table\" border=\"2\">\n<tr>"
         if (serverStatus and (server[0]).title() != "Total"):
             if (webServerStatus):
-                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
+                    (server[0]).title(
+                    ) + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
             else:
-                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
+                    (server[0]).title(
+                    ) + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
         elif (not serverStatus and (server[0]).title() != "Total"):
             if(webServerStatus):
-                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
+                    (server[0]).title(
+                    ) + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
             else:
-                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
+                    (server[0]).title(
+                    ) + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
 
         else:
-            tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>"
+            tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
+                (server[0]).title() + "</h3><br>"
         if((server[0]).title() != "Total" and showTargetIP):
-            tableResults = tableResults + "<hr style=\"border-top: 1px solid #000;\"/><h4>Server: <span style='color: #1E90FF'>" + server[1] + "</span></h4>"
+            if(showTargetIP):
+                tableResults = tableResults + \
+                    "<hr style=\"border-top: 1px solid #000;\"/><h4>Server: <span style='color: #1E90FF'>" + \
+                    server[1] + ":" + serverPortDict[server[0]] + "</span></h4>"
+            else:
+                tableResults = tableResults + \
+                    "<hr style=\"border-top: 1px solid #000;\"/><h4>Server: <span style='color: #1E90FF'>" + \
+                    server[1] + "</span></h4>"
         tableResults = tableResults + "</center></td></tr>\n"
         serverScores.sort(key=lambda score: -int(score[1]))
         topTagStart = "<div class=\"topscore\">"
         topTagEnd = "</div>"
         for team in serverScores:
-            tableResults = tableResults + "<tr><td>" + topTagStart + team[0] + topTagEnd + "</td><td>" + topTagStart + str(team[1]) + topTagEnd + "</td></tr>\n"
+            tableResults = tableResults + "<tr><td>" + topTagStart + \
+                team[0] + topTagEnd + "</td><td>" + topTagStart + \
+                str(team[1]) + topTagEnd + "</td></tr>\n"
             topTagStart = "<div class=\"otherscore\">"
             topTagEnd = "</div>"
         tableResults = tableResults + "</table></div>"
