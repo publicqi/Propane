@@ -14,7 +14,7 @@ os: Currently only used for removing uneeded template files generated on initial
 csv: used for parsing comma delimited lists for the White and Black Lists.
 imp: used for importing plugins (Propane Accessories)
 datetime: used for scheduling games using a start/end time
-thread (Timer): The Timer is used to spawn a thread that will end the game 
+thread (Timer): The Timer is used to spawn a thread that will end the game
                 once deltaTime value generated from the endtime in the config reaches 0.
 socket: Used to determine connections to a server/service
 shutil (copyfile): Used to copy files where ever they are needed. Used specifically for the scoreboard backups
@@ -95,30 +95,30 @@ portsToCheck = ""
 '''
 loadConfig():
     Loads and parses the propane_config file.
-    Loads the globals "configFile, serversToCheck, whiteListInit, blackListInit, sleepTime, outfile, outdir, startTime, endTime, whiteListIsOn, blackListIsOn, enablePropAcc, showTargetIP, enableCustomPorts, portsToCheck, enableBackUp" 
+    Loads the globals "configFile, serversToCheck, whiteListInit, blackListInit, sleepTime, outfile, outdir, startTime, endTime, whiteListIsOn, blackListIsOn, enablePropAcc, showTargetIP, enableCustomPorts, portsToCheck, enableBackUp"
     from the config file to use later on.
 '''
 
 
 def loadConfig():
-        print(bcolors.CYAN + bcolors.BOLD + "Loading Configurations" + bcolors.ENDC)
-        global configFile, serversToCheck, whiteListInit, blackListInit, sleepTime, outfile, outdir, startTime, endTime, whiteListIsOn, blackListIsOn, enablePropAcc, showTargetIP, enableCustomPorts, portsToCheck, enableBackUp
-        configFile = config.read("propane_config.ini")
-        serversToCheck = config.items("Targets")
-        whiteListInit = config.items("WhiteList")
-        blackListInit = config.items("BlackList")
-        sleepTime = config.getint("General", "sleeptime")
-        outfile = config.get("General", "outfile")
-        outdir = config.get("General", "outdir")
-        enableBackUp = config.getboolean("General", "enableBackUp")
-        startTime = config.get("General", "starttime")
-        endTime = config.get("General", "endtime")
-        whiteListIsOn = config.getboolean("General", "whiteListOn")
-        blackListIsOn = config.getboolean("General", "blackListOn")
-        enablePropAcc = config.getboolean("General", "enablePropAcc")
-        showTargetIP = config.getboolean("General", "showTargetIP")
-        enableCustomPorts = config.getboolean("General", "enableCustomPorts")
-        portsToCheck = config.items("PortConfig")
+    print(bcolors.CYAN + bcolors.BOLD + "Loading Configurations" + bcolors.ENDC)
+    global configFile, serversToCheck, whiteListInit, blackListInit, sleepTime, outfile, outdir, startTime, endTime, whiteListIsOn, blackListIsOn, enablePropAcc, showTargetIP, enableCustomPorts, portsToCheck, enableBackUp
+    configFile = config.read("propane_config.ini")
+    serversToCheck = config.items("Targets")
+    whiteListInit = config.items("WhiteList")
+    blackListInit = config.items("BlackList")
+    sleepTime = config.getint("General", "sleeptime")
+    outfile = config.get("General", "outfile")
+    outdir = config.get("General", "outdir")
+    enableBackUp = config.getboolean("General", "enableBackUp")
+    startTime = config.get("General", "starttime")
+    endTime = config.get("General", "endtime")
+    whiteListIsOn = config.getboolean("General", "whiteListOn")
+    blackListIsOn = config.getboolean("General", "blackListOn")
+    enablePropAcc = config.getboolean("General", "enablePropAcc")
+    showTargetIP = config.getboolean("General", "showTargetIP")
+    enableCustomPorts = config.getboolean("General", "enableCustomPorts")
+    portsToCheck = config.items("PortConfig")
 
 
 
@@ -128,7 +128,7 @@ loadPropAcc():
 
 '''
 def loadPropAcc():
-    
+
     propaccs = []
     possibleplugins = os.listdir(PropAccDir)
     for i in possibleplugins:
@@ -153,7 +153,7 @@ def initPropAcc(propacc):
 '''
 createBackUp():
     Initializes a timestamp for the file name at the current time of backing up. Then creates a folder called "Scoreboard_Backups"
-    if it does not exists already. Once the folder is made it copies the propane_scores.txt file to the backup folder with a name that is the current 
+    if it does not exists already. Once the folder is made it copies the propane_scores.txt file to the backup folder with a name that is the current
     timestamp down to the second.
 '''
 
@@ -162,6 +162,7 @@ def createBackUp():
     print(bcolors.CYAN + bcolors.BOLD + "Backing up scoreboard @ " + currentTime.strftime('%m-%d-%Y-%H-%M-%S') + bcolors.ENDC)
     os.makedirs("Scoreboard_Backups", exist_ok=True)
     copyfile("propane_scores.txt", "Scoreboard_Backups/" + currentTime.strftime('%m-%d-%Y-%H-%M-%S'))
+
 
 '''
 score():
@@ -178,100 +179,101 @@ score():
 '''
 
 def score(whiteList, blackList):
-        #Prepare for socket connection testing if webpage cannot be reached
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        scoresFile = scores.read("propane_scores.txt")
-        for server in serversToCheck:
-            try:
-                serverURL = 'http://' + server[1]
-                if (enableCustomPorts):
-                    for port in portsToCheck:
-                        if(port[0] == server[0]):
-                            serverURL = serverURL + ":" + port[1]
-                print(bcolors.GREEN + bcolors.BOLD + "Checking Server: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC)
-                url = urllib.request.urlopen(serverURL,None,10)
-                html = url.read()
-                team = re.search('<team>(.*)</team>', str(html), re.IGNORECASE).group(1).strip().replace("=","").replace("<","").replace(">","")
-                print(bcolors.BOLD + "Server " + server[0] + bcolors.ENDC + " pwned by " + bcolors.RED + team + bcolors.ENDC)
-                serverScoresection = server[0]+"Scores"
+    # Prepare for socket connection testing if webpage cannot be reached
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    scoresFile = scores.read("propane_scores.txt")
+    for server in serversToCheck:
+        try:
+            serverURL = 'http://' + server[1]
+            if (enableCustomPorts):
+                for port in portsToCheck:
+                    if(port[0] == server[0]):
+                        serverURL = serverURL + ":" + port[1]
+            print(bcolors.GREEN + bcolors.BOLD + "Checking Server: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC)
+            url = urllib.request.urlopen(serverURL, None, 10)
+            html = url.read()
+            team = re.search('<team>(.*)</team>', str(html), re.IGNORECASE).group(1).strip().replace("=", "").replace("<", "").replace(">", "")
+            print(bcolors.BOLD + "Server " + server[0] + bcolors.ENDC + " pwned by " + bcolors.RED + team + bcolors.ENDC)
+            serverScoresection = server[0] + "Scores"
 
-                if whiteListIsOn and not blackListIsOn:
-                    if team in whiteList:
-                        if not scores.has_option("TotalScores", team):
-                            scores.set("TotalScores", team, 0)
-                        currentScore = scores.getint( "TotalScores",team)
-                        scores.set( "TotalScores", team, currentScore+1)
-                        if not scores.has_option(serverScoresection, team):
-                            scores.set(serverScoresection, team, 0)
-                        currentScore = scores.getint( serverScoresection,team)
-                        scores.set( serverScoresection, team, currentScore+1)
-                    else:
-                        print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " not in the white list! Score was not updated." + bcolors.ENDC)
-                elif blackListIsOn and not whiteListIsOn:
-                    if team in blackList:
-                         print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " is in the black list! Score was not updated." + bcolors.ENDC)
-                    else:
-                        if not scores.has_option("TotalScores", team):
-                            scores.set("TotalScores", team, 0)
-                        currentScore = scores.getint( "TotalScores",team)
-                        scores.set( "TotalScores", team, currentScore+1)
-                        if not scores.has_option(serverScoresection, team):
-                            scores.set(serverScoresection, team, 0)
-                        currentScore = scores.getint( serverScoresection,team)
-                        scores.set( serverScoresection, team, currentScore+1)
-                elif whiteListIsOn and blackListIsOn:
-                    if team in blackList:
-                         print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " is in the black list! Score was not updated." + bcolors.ENDC)
-                    elif team in whiteList:
-                        if not scores.has_option("TotalScores", team):
-                            scores.set("TotalScores", team, 0)
-                        currentScore = scores.getint( "TotalScores",team)
-                        scores.set( "TotalScores", team, currentScore+1)
-                        if not scores.has_option(serverScoresection, team):
-                            scores.set(serverScoresection, team, 0)
-                        currentScore = scores.getint( serverScoresection,team)
-                        scores.set( serverScoresection, team, currentScore+1)
-                    else:
-                         print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " not in the white list! Score was not updated." + bcolors.ENDC)
+            if whiteListIsOn and not blackListIsOn:
+                if team in whiteList:
+                    if not scores.has_option("TotalScores", team):
+                        scores.set("TotalScores", team, 0)
+                    currentScore = scores.getint("TotalScores", team)
+                    scores.set("TotalScores", team, currentScore + 1)
+                    if not scores.has_option(serverScoresection, team):
+                        scores.set(serverScoresection, team, 0)
+                    currentScore = scores.getint(serverScoresection, team)
+                    scores.set(serverScoresection, team, currentScore + 1)
+                else:
+                    print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " not in the white list! Score was not updated." + bcolors.ENDC)
+            elif blackListIsOn and not whiteListIsOn:
+                if team in blackList:
+                    print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " is in the black list! Score was not updated." + bcolors.ENDC)
                 else:
                     if not scores.has_option("TotalScores", team):
                         scores.set("TotalScores", team, 0)
-                    currentScore = scores.getint( "TotalScores",team)
-                    scores.set( "TotalScores", team, currentScore+1)
+                    currentScore = scores.getint("TotalScores", team)
+                    scores.set("TotalScores", team, currentScore + 1)
                     if not scores.has_option(serverScoresection, team):
                         scores.set(serverScoresection, team, 0)
-                    currentScore = scores.getint( serverScoresection,team)
-                    scores.set( serverScoresection, team, currentScore+1)
-            except IOError:
-                response = os.system("ping -c 1 " + server[1] + " > /dev/null 2>&1")
-                if (response == 0):
-                    print(bcolors.GREEN + bcolors.BOLD + "Host for: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.GREEN + bcolors.BOLD + " is up!" + bcolors.ENDC) 
+                    currentScore = scores.getint(serverScoresection, team)
+                    scores.set(serverScoresection, team, currentScore + 1)
+            elif whiteListIsOn and blackListIsOn:
+                if team in blackList:
+                    print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " is in the black list! Score was not updated." + bcolors.ENDC)
+                elif team in whiteList:
+                    if not scores.has_option("TotalScores", team):
+                        scores.set("TotalScores", team, 0)
+                    currentScore = scores.getint("TotalScores", team)
+                    scores.set("TotalScores", team, currentScore + 1)
+                    if not scores.has_option(serverScoresection, team):
+                        scores.set(serverScoresection, team, 0)
+                    currentScore = scores.getint(serverScoresection, team)
+                    scores.set(serverScoresection, team, currentScore + 1)
                 else:
-                    print(bcolors.FAIL + bcolors.BOLD + server[0] + bcolors.ENDC + " @ " + bcolors.FAIL + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.FAIL + bcolors.BOLD + " host is down, you may want to check it!" + bcolors.ENDC)
+                    print(bcolors.FAIL + bcolors.BOLD + "User: " + team + " not in the white list! Score was not updated." + bcolors.ENDC)
+            else:
+                if not scores.has_option("TotalScores", team):
+                    scores.set("TotalScores", team, 0)
+                currentScore = scores.getint("TotalScores", team)
+                scores.set("TotalScores", team, currentScore + 1)
+                if not scores.has_option(serverScoresection, team):
+                    scores.set(serverScoresection, team, 0)
+                currentScore = scores.getint(serverScoresection, team)
+                scores.set(serverScoresection, team, currentScore + 1)
+        except IOError:
+            response = os.system("ping -c 1 " + server[1] + " > /dev/null 2>&1")
+            if (response == 0):
+                print(bcolors.GREEN + bcolors.BOLD + "Host for: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.GREEN + bcolors.BOLD + " is up!" + bcolors.ENDC)
+            else:
+                print(bcolors.FAIL + bcolors.BOLD + server[0] + bcolors.ENDC + " @ " + bcolors.FAIL + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.FAIL + bcolors.BOLD + " host is down, you may want to check it!" + bcolors.ENDC)
 
-                try:
-                    sock.settimeout(5)
-                    if (enableCustomPorts):
-                        for port in portsToCheck:
-                            if(port[0] == server[0]):
-                                sock.connect((server[1], port[1]))
-                                break
-                            else:
-                                print(server[0] + " good")
-                                break
-                    else:
-                        sock.connect((server[1], 80))
-                    print(bcolors.GREEN + bcolors.BOLD + "Web service for: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.GREEN + bcolors.BOLD + " is up!" + bcolors.ENDC)
-                except socket.error as e:
-                    print(bcolors.FAIL + bcolors.BOLD + server[0] + bcolors.ENDC + " @ " + bcolors.FAIL + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.FAIL + bcolors.BOLD + " web service is down, you may want to check it!" + bcolors.ENDC)
-                sock.close()
-            except AttributeError:
-                print(bcolors.BOLD + "Server " + bcolors.RED + server[0] + bcolors.ENDC + " is not officially " + bcolors.RED + "pwned " + bcolors.ENDC + "yet")
-        with open("propane_scores.txt", 'w') as scoresFile:
-                scores.write(scoresFile)
-        # If backups are are on, make a back up!
-        if enableBackUp:
-            createBackUp()
+            try:
+                sock.settimeout(5)
+                if (enableCustomPorts):
+                    for port in portsToCheck:
+                        if(port[0] == server[0]):
+                            sock.connect((server[1], port[1]))
+                            break
+                        else:
+                            print(server[0] + " good")
+                            break
+                else:
+                    sock.connect((server[1], 80))
+                print(bcolors.GREEN + bcolors.BOLD + "Web service for: " + bcolors.RED + server[0] + bcolors.ENDC + " @ " + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.GREEN + bcolors.BOLD + " is up!" + bcolors.ENDC)
+            except socket.error:
+                print(bcolors.FAIL + bcolors.BOLD + server[0] + bcolors.ENDC + " @ " + bcolors.FAIL + bcolors.BOLD + server[1] + bcolors.ENDC + bcolors.FAIL + bcolors.BOLD + " web service is down, you may want to check it!" + bcolors.ENDC)
+            sock.close()
+        except AttributeError:
+            print(bcolors.BOLD + "Server " + bcolors.RED + server[0] + bcolors.ENDC + " is not officially " + bcolors.RED + "pwned " + bcolors.ENDC + "yet")
+    with open("propane_scores.txt", 'w') as scoresFile:
+        scores.write(scoresFile)
+    # If backups are are on, make a back up!
+    if enableBackUp:
+        createBackUp()
+
 
 '''
 initScoreFile():
@@ -282,14 +284,14 @@ initScoreFile():
 
 
 def initScoreFile():
-        scoresFile = scores.read("propane_scores.txt")
-        if not scores.has_section("TotalScores"):
-                scores.add_section("TotalScores")
+    # scoresFile = scores.read("propane_scores.txt")
+    if not scores.has_section("TotalScores"):
+        scores.add_section("TotalScores")
 
-        for server in serversToCheck:
-                serverScoresection = server[0]+"Scores"
-                if not scores.has_section(serverScoresection):
-                        scores.add_section(serverScoresection)
+    for server in serversToCheck:
+        serverScoresection = server[0] + "Scores"
+        if not scores.has_section(serverScoresection):
+            scores.add_section(serverScoresection)
 
 
 '''
@@ -303,59 +305,59 @@ reloadScoreBoard():
 
 
 def reloadScoreBoard(server):
-        print(bcolors.BLUE + bcolors.BOLD + "Reloading Scoreboard for: " + bcolors.ENDC + bcolors.BOLD + server[0] + bcolors.ENDC)
-        try:
+    print(bcolors.BLUE + bcolors.BOLD + "Reloading Scoreboard for: " + bcolors.ENDC + bcolors.BOLD + server[0] + bcolors.ENDC)
+    try:
 
-            serverScoresection = server[0]+"Scores"
-            serverScores = scores.items(serverScoresection)
+        serverScoresection = server[0] + "Scores"
+        serverScores = scores.items(serverScoresection)
 
-            #Check if servers and web services are up
+        # Check if servers and web services are up
+        serverStatus = False
+        webServerStatus = False
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        response = os.system("ping -c 1 " + server[1] + " > /dev/null 2>&1")
+        if (response == 0):
+            serverStatus = True
+        else:
             serverStatus = False
+        try:
+            sock.connect((server[1], 80))
+            webServerStatus = True
+        except socket.error:
             webServerStatus = False
-            
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(5)
-            response = os.system("ping -c 1 " + server[1] + " > /dev/null 2>&1")
-            if (response == 0):
-                serverStatus = True
-            else:
-                serverStatus = False
-            try:
-                sock.connect((server[1], 80))
-                webServerStatus = True
-            except socket.error as e:
-                webServerStatus = False
-            sock.close()
+        sock.close()
 
-            tableResults = "<div class=\"col-md-12\" id=\"" + server[0] + "\">"
-            tableResults = tableResults + "<table class=\"table\" border=\"2\">\n<tr>"
-            if (serverStatus and (server[0]).title() != "Total"):
-                if (webServerStatus):
-                    tableResults = tableResults + "<td colspan=\"2\"><center><h3>" +(server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
-                else:
-                    tableResults = tableResults + "<td colspan=\"2\"><center><h3>" +(server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:red'>Down</span><br>"   
-            elif (not serverStatus and (server[0]).title() != "Total"):
-                if(webServerStatus):
-                    tableResults = tableResults + "<td colspan=\"2\"><center><h3>" +(server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
-                else:
-                    tableResults = tableResults + "<td colspan=\"2\"><center><h3>" +(server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
-
+        tableResults = "<div class=\"col-md-12\" id=\"" + server[0] + "\">"
+        tableResults = tableResults + "<table class=\"table\" border=\"2\">\n<tr>"
+        if (serverStatus and (server[0]).title() != "Total"):
+            if (webServerStatus):
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
             else:
-                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" +(server[0]).title() + "</h3><br>"                
-            if((server[0]).title() != "Total" and showTargetIP):
-                    tableResults = tableResults + "<hr style=\"border-top: 1px solid #000;\"/><h4>Server: <span style='color: #1E90FF'>" + server[1]  +"</span></h4>"
-            tableResults = tableResults + "</center></td></tr>\n"
-            serverScores.sort(key=lambda score: -int(score[1]))
-            topTagStart="<div class=\"topscore\">"
-            topTagEnd="</div>"
-            for team in serverScores:
-                tableResults = tableResults + "<tr><td>" + topTagStart + team[0].title() + topTagEnd + "</td><td>" + topTagStart + str(team[1]) +  topTagEnd  + "</td></tr>\n"
-                topTagStart="<div class=\"otherscore\">"
-                topTagEnd="</div>"
-            tableResults = tableResults + "</table></div>"
-            return tableResults
-        except:
-            print(bcolors.FAIL + bcolors.BOLD + "No section for " + server[0] + " (check your template for errors)" + bcolors.ENDC)
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+        elif (not serverStatus and (server[0]).title() != "Total"):
+            if(webServerStatus):
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
+            else:
+                tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+
+        else:
+            tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + (server[0]).title() + "</h3><br>"
+        if((server[0]).title() != "Total" and showTargetIP):
+            tableResults = tableResults + "<hr style=\"border-top: 1px solid #000;\"/><h4>Server: <span style='color: #1E90FF'>" + server[1] + "</span></h4>"
+        tableResults = tableResults + "</center></td></tr>\n"
+        serverScores.sort(key=lambda score: -int(score[1]))
+        topTagStart = "<div class=\"topscore\">"
+        topTagEnd = "</div>"
+        for team in serverScores:
+            tableResults = tableResults + "<tr><td>" + topTagStart + team[0].title() + topTagEnd + "</td><td>" + topTagStart + str(team[1]) + topTagEnd + "</td></tr>\n"
+            topTagStart = "<div class=\"otherscore\">"
+            topTagEnd = "</div>"
+        tableResults = tableResults + "</table></div>"
+        return tableResults
+    except Exception:
+        print(bcolors.FAIL + bcolors.BOLD + "No section for " + server[0] + " (check your template for errors)" + bcolors.ENDC)
 
 
 '''
@@ -371,12 +373,12 @@ getEndTime():
 
 def getEndTime(gameSetup):
     currentTime = datetime.now()
-    
+
     try:
         endHour = int(endTime.split(":")[0])
-    
+
         endMinute = int(endTime.split(":")[1])
-    except:
+    except Exception:
         print(bcolors.FAIL + "The endtime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
     formattedEndTime = currentTime.replace(day=currentTime.day, hour=endHour, minute=endMinute, microsecond=currentTime.microsecond)
 
@@ -399,10 +401,10 @@ def getEndTime(gameSetup):
                         minutes = minutes < 10 ? "0" + minutes : minutes;
                         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-                        
-                        
+
+
                          display.textContent = "Time Remaining: " + hours + ":" + minutes + ":" + seconds;
-                        
+
                         if(hours <= 0){
                             if(minutes <= 9){
                                 display.textContent = "FINAL COUTDOWN: " + hours + ":" + minutes + ":" + seconds;
@@ -411,7 +413,7 @@ def getEndTime(gameSetup):
                                 display.style.color = "orange";
                             }
                         }
-                        
+
                         if (--timer < 0) {
                             timer = duration;
                         }
@@ -423,7 +425,7 @@ def getEndTime(gameSetup):
                     display = document.querySelector('#countdown');
                         startTimer(countdownStart, display);
                 };"""
-                
+
     countdownJS = open(outdir + "countdown.js", "w+")
     countdownJS.write(timerJS)
     countdownJS.close()
@@ -472,100 +474,100 @@ main():
 
 def main():
 
-        global gameSetup
+    global gameSetup
 
 
-        while True:
+    while True:
 
-                # Load Conifgurations
-                loadConfig()
-                # Init Score File
-                initScoreFile()
-                #Refresh Countdown Timer
-                if endTime and not gameSetup:
-                    getEndTime(gameSetup)
-                # Open template file
-                templateFile = open("template/template.html", 'r')
-                # Read in template file
-                scorePage = templateFile.read()
-         
-                # Load up the white list
-                whiteList = ""
+        # Load Conifgurations
+        loadConfig()
+        # Init Score File
+        initScoreFile()
+        # Refresh Countdown Timer
+        if endTime and not gameSetup:
+            getEndTime(gameSetup)
+        # Open template file
+        templateFile = open("template/template.html", 'r')
+        # Read in template file
+        scorePage = templateFile.read()
 
-                for user in whiteListInit:
-                    parseWhiteList = csv.reader([user[1]])
-                    for user in parseWhiteList:
-                        whiteList = user
-                
-                blackList = ""
+        # Load up the white list
+        whiteList = ""
 
-                for user in blackListInit:
-                    parseBlackList = csv.reader([user[1]])
-                    for user in parseBlackList:
-                        blackList = user
+        for user in whiteListInit:
+            parseWhiteList = csv.reader([user[1]])
+            for user in parseWhiteList:
+                whiteList = user
 
-               
+        blackList = ""
 
-                # Do one-time set up stuff on start of the game
-                if(gameSetup):
-                        print(bcolors.CYAN + bcolors.BOLD + "Game Setup: " + bcolors.ENDC + " copying template files")
-                        copy_tree("template", outdir)
-                        os.remove(outdir + "template.html")
+        for user in blackListInit:
+            parseBlackList = csv.reader([user[1]])
+            for user in parseBlackList:
+                blackList = user
 
-                        if startTime:
-                            currentTime = datetime.now()
 
-                            try:
-                                startHour = int(startTime.split(":")[0])
-                                startMinute = int(startTime.split(":")[1])
-                            except ValueError:
-                                print(bcolors.FAIL + "The starttime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
-                        
-                            formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, microsecond=currentTime.microsecond)
 
-                            timeDelta = formattedStartTime - currentTime
+            # Do one-time set up stuff on start of the game
+            if(gameSetup):
+                print(bcolors.CYAN + bcolors.BOLD + "Game Setup: " + bcolors.ENDC + " copying template files")
+                copy_tree("template", outdir)
+                os.remove(outdir + "template.html")
 
-                            print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
-                            time.sleep(timeDelta.seconds)
+                if startTime:
+                    currentTime = datetime.now()
 
-                        if endTime:
-                            
-                            getEndTime(gameSetup)
-                            
-                        gameSetup = False
-                        
-                # Do some scoring!
-                score(whiteList, blackList)
+                    try:
+                        startHour = int(startTime.split(":")[0])
+                        startMinute = int(startTime.split(":")[1])
+                    except ValueError:
+                        print(bcolors.FAIL + "The starttime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
 
-                #Load Propane Accessories and run their start() function
-                if enablePropAcc:
-                    for i in loadPropAcc():
-                        print(bcolors.CYAN + bcolors.BOLD + "Loading Propane Accessory: " + bcolors.ENDC + bcolors.BOLD + i["name"] + bcolors.ENDC)
-                        propacc = initPropAcc(i)
-                        propacc.start()
+                    formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, microsecond=currentTime.microsecond)
 
-                # Update Server Scores on Scoreboard
-               
-                for server in serversToCheck:
-                    thisTable = reloadScoreBoard(server)
-                    serverLabelTag=("<" + server[0] + ">").upper()
-                    print(bcolors.GREEN + bcolors.BOLD + "Updating " + bcolors.ENDC + bcolors.BOLD + serverLabelTag + bcolors.ENDC + " tag in the template")
-                    scorePage = scorePage.replace(serverLabelTag,thisTable)
-                # Update Total Scores on Scoreboard
-                thisTable = reloadScoreBoard(["Total",""])
-                serverLabelTag=("<TOTAL>").upper()
+                    timeDelta = formattedStartTime - currentTime
+
+                    print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
+                    time.sleep(timeDelta.seconds)
+
+                    if endTime:
+
+                        getEndTime(gameSetup)
+
+                    gameSetup = False
+
+            # Do some scoring!
+            score(whiteList, blackList)
+
+            # Load Propane Accessories and run their start() function
+            if enablePropAcc:
+                for i in loadPropAcc():
+                    print(bcolors.CYAN + bcolors.BOLD + "Loading Propane Accessory: " + bcolors.ENDC + bcolors.BOLD + i["name"] + bcolors.ENDC)
+                    propacc = initPropAcc(i)
+                    propacc.start()
+
+            # Update Server Scores on Scoreboard
+
+            for server in serversToCheck:
+                thisTable = reloadScoreBoard(server)
+                serverLabelTag = ("<" + server[0] + ">").upper()
                 print(bcolors.GREEN + bcolors.BOLD + "Updating " + bcolors.ENDC + bcolors.BOLD + serverLabelTag + bcolors.ENDC + " tag in the template")
-                scorePage = scorePage.replace(serverLabelTag,thisTable)
-                # Write out the updates made to the Scoreboard and get ready for next interval
-                print(bcolors.BLUE + bcolors.BOLD + "Updating Scoreboard " + bcolors.ENDC + bcolors.BOLD + outfile + bcolors.ENDC)
-                outFileHandler = open(outfile, 'w')
-                outFileHandler.write(scorePage)
-                outFileHandler.close()
-                print(bcolors.CYAN + bcolors.BOLD + "Next update in: " + bcolors.ENDC + str(sleepTime) + bcolors.BOLD + " second(s)" + bcolors.ENDC)
-                time.sleep(sleepTime)
+                scorePage = scorePage.replace(serverLabelTag, thisTable)
+            # Update Total Scores on Scoreboard
+            thisTable = reloadScoreBoard(["Total", ""])
+            serverLabelTag = ("<TOTAL>").upper()
+            print(bcolors.GREEN + bcolors.BOLD + "Updating " + bcolors.ENDC + bcolors.BOLD + serverLabelTag + bcolors.ENDC + " tag in the template")
+            scorePage = scorePage.replace(serverLabelTag, thisTable)
+            # Write out the updates made to the Scoreboard and get ready for next interval
+            print(bcolors.BLUE + bcolors.BOLD + "Updating Scoreboard " + bcolors.ENDC + bcolors.BOLD + outfile + bcolors.ENDC)
+            outFileHandler = open(outfile, 'w')
+            outFileHandler.write(scorePage)
+            outFileHandler.close()
+            print(bcolors.CYAN + bcolors.BOLD + "Next update in: " + bcolors.ENDC + str(sleepTime) + bcolors.BOLD + " second(s)" + bcolors.ENDC)
+            time.sleep(sleepTime)
 
 
-#Execute main()
+# Execute main()
 
 if __name__ == "__main__":
     main()
