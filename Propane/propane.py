@@ -649,12 +649,13 @@ def main():
                     propacc.start()
 
             # Update Server Scores on Scoreboard
-
+            n = 1
             for server in serversToCheck:
                 thisTable = reloadScoreBoard(server)
-                serverLabelTag = ("<" + server[0] + ">").upper()
+                serverLabelTag = ("<SERVICE" + str(n) + ">").upper()
                 print(bcolors.GREEN + bcolors.BOLD + "Updating " + bcolors.ENDC + bcolors.BOLD + serverLabelTag + bcolors.ENDC + " tag in the template")
                 scorePage = scorePage.replace(serverLabelTag, thisTable)
+                n += 1
             # Update Total Scores on Scoreboard
             thisTable = reloadScoreBoard(["Total", ""])
             serverLabelTag = ("<TOTAL>").upper()
@@ -669,7 +670,6 @@ def main():
             if aboutToEnd:
                 endGame()
             time.sleep(sleepTime)
-            print(datetime.now().second)
 
 
 # Execute main()
