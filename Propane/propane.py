@@ -29,7 +29,6 @@ import os
 import csv
 import imp
 from datetime import datetime
-from threading import Timer
 import socket
 from shutil import copyfile
 
@@ -398,8 +397,9 @@ def getEndTime(gameSetup):
         endMinute = int(endTime.split(":")[1])
     except Exception:
         print(bcolors.FAIL + "The endtime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
-    formattedEndTime = currentTime.replace(day=currentTime.day, hour=endHour, minute=endMinute, microsecond=currentTime.microsecond)
-
+    formattedEndTime = currentTime.replace(day=currentTime.day, hour=endHour, minute=endMinute, second=0, microsecond=currentTime.microsecond)
+    if formattedEndTime < currentTime:
+        endGame()
     timeDelta = formattedEndTime - currentTime
     secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
     print("{} seconds left".format(secondsLeft))
@@ -573,7 +573,6 @@ def main():
 
 
     while True:
-
         # Load Conifgurations
         loadConfig()
         # Init Score File
@@ -619,13 +618,19 @@ def main():
                         print(bcolors.FAIL + "The starttime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
 
                     formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, second=0, microsecond=currentTime.microsecond)
+                    if formattedStartTime > currentTime:
+                        # Assume the game has not started
+                        timeDelta = formattedStartTime - currentTime
 
-                    timeDelta = formattedStartTime - currentTime
-
-                    print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
-                    secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
-                    logStartCountdown()
-                    time.sleep(secondsLeft)
+                        print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
+                        secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
+                        logStartCountdown()
+                        time.sleep(secondsLeft)
+                    else:
+                        # Assume this has already started
+                        print(bcolors.GREEN + bcolors.BOLD + "Continue game... Sleep {} seconds".format(60 - datetime.now().second) + bcolors.ENDC)
+                        time.sleep(60 - datetime.now().second)
+                        pass
 
                     if endTime:
 
@@ -664,6 +669,7 @@ def main():
             if aboutToEnd:
                 endGame()
             time.sleep(sleepTime)
+            print(datetime.now().second)
 
 
 # Execute main()
