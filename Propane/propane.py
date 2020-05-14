@@ -473,6 +473,49 @@ def endGame():
     os._exit(0)
 
 
+def logStartCountdown(timeLeft):
+    print("ABOUT TO START")
+    timerJS = """
+        function startTimer(duration, display) {
+            var timer = duration, hours, minutes, seconds;
+                setInterval(function () {
+                        hours = parseInt(timer / 3600, 10)
+                        minutes = parseInt((timer / 60) % 60, 10)
+                        seconds = parseInt(timer % 60, 10);
+
+                        hours = hours < 10 ? "0" + hours : hours;
+                        minutes = minutes < 10 ? "0" + minutes : minutes;
+                        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+
+
+                        display.textContent = "GAME START IN: " + hours + ":" + minutes + ":" + seconds;
+
+                        if(hours <= 0){
+                            if(minutes <= 9){
+                                display.textContent = "GAME START IN: " + hours + ":" + minutes + ":" + seconds;
+                                display.style.color = "orange";
+                            }else if(minutes >= 10 && minutes <= 30){
+                                display.style.color = "orange";
+                            }
+                        }
+
+                        if (--timer < 0) {
+                            timer = duration;
+                        }
+                    }, 1000);
+                }
+
+            window.onload = function () {
+                var countdownStart = """ + str(timeLeft) + """,
+                    display = document.querySelector('#countdown');
+                        startTimer(countdownStart, display);
+                };"""
+    countdownJS = open(outdir + "countdown.js", "w+")
+    countdownJS.write(timerJS)
+    countdownJS.close()
+
+
 '''
 main():
     Propane main function. Runs the loadConfig(), initScoreFile() functions and then setups up the scoreboard web pages
@@ -553,6 +596,7 @@ def main():
 
                     print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
                     secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
+                    logStartCountdown(secondsLeft)
                     time.sleep(secondsLeft)
 
                     if endTime:
