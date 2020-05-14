@@ -366,10 +366,16 @@ def reloadScoreBoard(server):
         serverScores.sort(key=lambda score: -int(score[1]))
         topTagStart = "<div class=\"topscore\">"
         topTagEnd = "</div>"
+        topScore = 0
         for team in serverScores:
+            if team[1] == topScore:
+                topTagStart = "<div class=\"topscore\">"
+                topTagEnd = "</div>"
+                topScore = 0
             tableResults = tableResults + "<tr><td>" + topTagStart + \
                 team[0] + topTagEnd + "</td><td>" + topTagStart + \
                 str(team[1]) + topTagEnd + "</td></tr>\n"
+            topScore = team[1]
             topTagStart = "<div class=\"otherscore\">"
             topTagEnd = "</div>"
         tableResults = tableResults + "</table></div>"
@@ -439,7 +445,7 @@ def getEndTime(gameSetup):
                             }
                         }
 
-                        if (timer == 0){
+                        if (timer <= 0){
                             display.textContent = "The game has ended.";
                             clearInterval(timerInterval);
                         }
