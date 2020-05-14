@@ -404,7 +404,7 @@ def getEndTime(gameSetup):
     secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
     print("{} seconds left".format(secondsLeft))
     if secondsLeft == 0:
-        endGame()
+        return True
 
     if gameSetup:
         # For some unknown reason, the Timer does not work properly
@@ -453,6 +453,7 @@ def getEndTime(gameSetup):
     countdownJS = open(outdir + "countdown.js", "w+")
     countdownJS.write(timerJS)
     countdownJS.close()
+    return False
 
 
 '''
@@ -508,7 +509,7 @@ def main():
         initScoreFile()
         # Refresh Countdown Timer
         if endTime and not gameSetup:
-            getEndTime(gameSetup)
+            aboutToEnd = getEndTime(gameSetup)
         # Open template file
         templateFile = open("template/template.html", 'r')
         # Read in template file
@@ -556,7 +557,7 @@ def main():
 
                     if endTime:
 
-                        getEndTime(gameSetup)
+                        aboutToEnd = getEndTime(gameSetup)
 
                     gameSetup = False
 
@@ -588,6 +589,8 @@ def main():
             outFileHandler.write(scorePage)
             outFileHandler.close()
             print(bcolors.CYAN + bcolors.BOLD + "Next update in: " + bcolors.ENDC + str(sleepTime) + bcolors.BOLD + " second(s)" + bcolors.ENDC)
+            if aboutToEnd:
+                endGame()
             time.sleep(sleepTime)
 
 
