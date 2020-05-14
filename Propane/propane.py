@@ -336,20 +336,20 @@ def reloadScoreBoard(server):
             if (webServerStatus):
                 tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
                     (server[0]).title(
-                    ) + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
+                    ) + "</h3><br>Web Service: <span style='color:green'>Up</span><br>"
             else:
                 tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
                     (server[0]).title(
-                    ) + "</h3><br>Server Status: <span style='color:green'>Up</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+                    ) + "</h3><br>Web Service: <span style='color:red'>Down</span><br>"
         elif (not serverStatus and (server[0]).title() != "Total"):
             if(webServerStatus):
                 tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
                     (server[0]).title(
-                    ) + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:green'>Up</span><br>"
+                    ) + "</h3><br>Web Service: <span style='color:green'>Up</span><br>"
             else:
                 tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
                     (server[0]).title(
-                    ) + "</h3><br>Server Status: <span style='color:red'>Down</span><br><br>Web Service: <span style='color:red'>Down</span><br>"
+                    ) + "</h3><br>Web Service: <span style='color:red'>Down</span><br>"
 
         else:
             tableResults = tableResults + "<td colspan=\"2\"><center><h3>" + \
@@ -395,18 +395,23 @@ def getEndTime(gameSetup):
 
     try:
         endHour = int(endTime.split(":")[0])
-
         endMinute = int(endTime.split(":")[1])
     except Exception:
         print(bcolors.FAIL + "The endtime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
     formattedEndTime = currentTime.replace(day=currentTime.day, hour=endHour, minute=endMinute, microsecond=currentTime.microsecond)
 
     timeDelta = formattedEndTime - currentTime
+    secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
+    print("{} seconds left".format(secondsLeft))
+    if secondsLeft == 0:
+        endGame()
 
     if gameSetup:
-        endTimer = Timer(timeDelta.seconds, endGame)
+        # For some unknown reason, the Timer does not work properly
+        # endTimer = Timer(secondsLeft, endGame)
+        print("Timer inited at: " + str(currentTime))
         print(bcolors.YELLOW + bcolors.BOLD + "Propane will end at: " + str(formattedEndTime) + bcolors.ENDC)
-        endTimer.start()
+        # endTimer.start()
 
     timerJS = """
         function startTimer(duration, display) {
@@ -462,7 +467,6 @@ endGame():
 '''
 
 def endGame():
-
     print(bcolors.YELLOW + bcolors.BOLD + "Propane has ended at: " + str(datetime.now()) + bcolors.ENDC)
 
     os._exit(0)
@@ -542,12 +546,13 @@ def main():
                     except ValueError:
                         print(bcolors.FAIL + "The starttime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
 
-                    formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, microsecond=currentTime.microsecond)
+                    formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, second=0, microsecond=currentTime.microsecond)
 
                     timeDelta = formattedStartTime - currentTime
 
                     print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
-                    time.sleep(timeDelta.seconds)
+                    secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
+                    time.sleep(secondsLeft)
 
                     if endTime:
 
