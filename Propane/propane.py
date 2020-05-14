@@ -407,16 +407,17 @@ def getEndTime(gameSetup):
         return True
 
     if gameSetup:
-        # For some unknown reason, the Timer does not work properly
+        # For some unknown reason, threading Timer does not work properly
         # endTimer = Timer(secondsLeft, endGame)
-        print("Timer inited at: " + str(currentTime))
         print(bcolors.YELLOW + bcolors.BOLD + "Propane will end at: " + str(formattedEndTime) + bcolors.ENDC)
         # endTimer.start()
+
+    endTimestamp = datetime.timestamp(formattedEndTime)
 
     timerJS = """
         function startTimer(duration, display) {
             var timer = duration, hours, minutes, seconds;
-                setInterval(function () {
+            var timerInterval = setInterval(function () {
                         hours = parseInt(timer / 3600, 10)
                         minutes = parseInt((timer / 60) % 60, 10)
                         seconds = parseInt(timer % 60, 10);
@@ -438,6 +439,11 @@ def getEndTime(gameSetup):
                             }
                         }
 
+                        if (timer == 0){
+                            display.textContent = "The game has ended.";
+                            clearInterval(timerInterval);
+                        }
+
                         if (--timer < 0) {
                             timer = duration;
                         }
@@ -445,7 +451,9 @@ def getEndTime(gameSetup):
                 }
 
             window.onload = function () {
-                var countdownStart = """ + str(timeDelta.seconds) + """,
+                var nowTimestamp = Math.floor(Date.now() / 1000);
+                var endTimestamp = """ + str(int(endTimestamp)) + """;
+                var countdownStart = endTimestamp - nowTimestamp,
                     display = document.querySelector('#countdown');
                         startTimer(countdownStart, display);
                 };"""
@@ -469,12 +477,30 @@ endGame():
 
 def endGame():
     print(bcolors.YELLOW + bcolors.BOLD + "Propane has ended at: " + str(datetime.now()) + bcolors.ENDC)
+    timerJS = """
+        window.onload = function () {
+            var countdownStart = 0,
+            display = document.querySelector('#countdown');
+            display.textContent = "The game has ended.";
+            display.style.color = "red";
+            };"""
 
+    countdownJS = open(outdir + "countdown.js", "w+")
+    countdownJS.write(timerJS)
+    countdownJS.close()
     os._exit(0)
 
 
-def logStartCountdown(timeLeft):
-    print("ABOUT TO START")
+def logStartCountdown():
+    currentTime = datetime.now()
+
+    try:
+        startHour = int(startTime.split(":")[0])
+        startMinute = int(startTime.split(":")[1])
+    except Exception:
+        print(bcolors.FAIL + "The endtime in your config doesn't look like a valid 24 hour time format..." + bcolors.ENDC)
+    formattedStartTime = currentTime.replace(day=currentTime.day, hour=startHour, minute=startMinute, microsecond=currentTime.microsecond)
+    startTimestamp = datetime.timestamp(formattedStartTime)
     timerJS = """
         function startTimer(duration, display) {
             var timer = duration, hours, minutes, seconds;
@@ -507,7 +533,9 @@ def logStartCountdown(timeLeft):
                 }
 
             window.onload = function () {
-                var countdownStart = """ + str(timeLeft) + """,
+                var nowTimestamp = Math.floor(Date.now() / 1000);
+                var startTimestamp = """ + str(int(startTimestamp)) + """;
+                var countdownStart = startTimestamp - nowTimestamp,
                     display = document.querySelector('#countdown');
                         startTimer(countdownStart, display);
                 };"""
@@ -596,7 +624,7 @@ def main():
 
                     print(bcolors.GREEN + bcolors.BOLD + "Propane will start at: " + str(formattedStartTime) + bcolors.ENDC)
                     secondsLeft = sum([x * y for x, y in zip([3600, 60, 1], list(int(z) for z in str(timeDelta).split(":")))])
-                    logStartCountdown(secondsLeft)
+                    logStartCountdown()
                     time.sleep(secondsLeft)
 
                     if endTime:
